@@ -4,7 +4,7 @@ import com.gtalent.demo.models.User;
 import com.gtalent.demo.repositories.UserRepository;
 import com.gtalent.demo.requests.CreateUserRequest;
 import com.gtalent.demo.requests.UpdateUserRequest;
-import com.gtalent.demo.responses.GetUserResponse;
+import com.gtalent.demo.responses.UserResponse;
 import com.gtalent.demo.responses.UpdateUserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,9 +27,9 @@ public class UserV2Controller {
     }
 
     @GetMapping
-    public ResponseEntity<List<GetUserResponse>> getAllUser() {
+    public ResponseEntity<List<UserResponse>> getAllUser() {
         List<User> users = userRepository.findAll();
-        return ResponseEntity.ok(users.stream().map(GetUserResponse::new).toList());
+        return ResponseEntity.ok(users.stream().map(UserResponse::new).toList());
     }
 
 //    @GetMapping("/{id}")
@@ -41,10 +41,10 @@ public class UserV2Controller {
 
     //改寫 : 以Optional包裝，用來避免 null pointer exception
     @GetMapping("/{id}")
-    public ResponseEntity<GetUserResponse> getUserById(@PathVariable int id) {
+    public ResponseEntity<UserResponse> getUserById(@PathVariable int id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
-            GetUserResponse response = new GetUserResponse(user.get());
+            UserResponse response = new UserResponse(user.get());
             return ResponseEntity.ok(response);
         } else {
             //回傳404
@@ -83,13 +83,13 @@ public class UserV2Controller {
     }
 
     @PostMapping
-    public ResponseEntity<GetUserResponse> createUsers(@RequestBody CreateUserRequest request) {
+    public ResponseEntity<UserResponse> createUsers(@RequestBody CreateUserRequest request) {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         System.out.println("Before Save:" + user);
         User savedUser = userRepository.save(user);
-        GetUserResponse response = new GetUserResponse(savedUser);
+        UserResponse response = new UserResponse(savedUser);
         return ResponseEntity.ok(response);
     }
 

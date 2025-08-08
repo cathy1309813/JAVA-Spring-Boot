@@ -5,7 +5,7 @@ import com.gtalent.demo.models.User;
 import com.gtalent.demo.requests.CreateUserRequest;
 import com.gtalent.demo.requests.UpdateUserRequest;
 import com.gtalent.demo.responses.CreateUserResponse;
-import com.gtalent.demo.responses.GetUserResponse;
+import com.gtalent.demo.responses.UserResponse;
 import com.gtalent.demo.responses.UpdateUserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -44,19 +44,19 @@ public class UserV1Controller {
     }
 
     @GetMapping
-    public ResponseEntity<List<GetUserResponse>> getAllUser() {
+    public ResponseEntity<List<UserResponse>> getAllUser() {
         String sql = "select * from users";
         List<User> users = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(User.class));
-        return ResponseEntity.ok(users.stream().map(GetUserResponse::new).toList());
+        return ResponseEntity.ok(users.stream().map(UserResponse::new).toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GetUserResponse> getUserById(@PathVariable int id) {
+    public ResponseEntity<UserResponse> getUserById(@PathVariable int id) {
         String sql = "select * from users where id=?";
         try {
             User user = jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(User.class), id);
             System.out.println(user);
-            return ResponseEntity.ok(new GetUserResponse(user));
+            return ResponseEntity.ok(new UserResponse(user));
         } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (DataAccessException e) {
@@ -87,13 +87,13 @@ public class UserV1Controller {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<GetUserResponse>> searchUser(@RequestParam String keyword) {
+    public ResponseEntity<List<UserResponse>> searchUser(@RequestParam String keyword) {
         String sql = "SELECT * FROM users WHERE username LIKE ?";
         String pattern = "%" + keyword + "%";
-        List<GetUserResponse> responses = jdbcTemplate.query(
+        List<UserResponse> responses = jdbcTemplate.query(
                 sql,
                 new Object[]{pattern},
-                (rs, rowNum) -> new GetUserResponse(
+                (rs, rowNum) -> new UserResponse(
                         rs.getInt("id"),
                         rs.getString("username")
                 )

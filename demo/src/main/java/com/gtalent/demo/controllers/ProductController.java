@@ -1,17 +1,10 @@
 package com.gtalent.demo.controllers;
 
 import com.gtalent.demo.models.Product;
-import com.gtalent.demo.models.User;
 import com.gtalent.demo.repositories.ProductRepository;
-import com.gtalent.demo.repositories.UserRepository;
 import com.gtalent.demo.requests.CreateProductRequest;
-import com.gtalent.demo.requests.CreateUserRequest;
 import com.gtalent.demo.requests.UpdateProductRequest;
-import com.gtalent.demo.requests.UpdateUserRequest;
-import com.gtalent.demo.responses.GetProductResponse;
-import com.gtalent.demo.responses.GetUserResponse;
-import com.gtalent.demo.responses.UpdateProductResponse;
-import com.gtalent.demo.responses.UpdateUserResponse;
+import com.gtalent.demo.responses.ProductResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,16 +26,16 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GetProductResponse>> getAllProduct() {
+    public ResponseEntity<List<ProductResponse>> getAllProduct() {
         List<Product> products = productRepository.findAll();
-        return ResponseEntity.ok(products.stream().map(GetProductResponse::new).toList());
+        return ResponseEntity.ok(products.stream().map(ProductResponse::new).toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GetProductResponse> getProductById(@PathVariable int id) {
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable int id) {
         Optional<Product> product = productRepository.findById(id);
         if (product.isPresent()) {
-            GetProductResponse response = new GetProductResponse(product.get());
+            ProductResponse response = new ProductResponse(product.get());
             return ResponseEntity.ok(response);
         } else {
             //回傳404
@@ -51,7 +44,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<GetProductResponse> updateProductById(@PathVariable int id, @RequestBody UpdateProductRequest request) {
+    public ResponseEntity<ProductResponse> updateProductById(@PathVariable int id, @RequestBody UpdateProductRequest request) {
         //1.找到Product
         Optional<Product> product = productRepository.findById(id);
         if(product.isPresent()) {
@@ -67,7 +60,7 @@ public class ProductController {
             System.out.println("Before Save:" + updatedProduct);
 
             updatedProduct = productRepository.save(updatedProduct);
-            GetProductResponse response = new GetProductResponse(updatedProduct);
+            ProductResponse response = new ProductResponse(updatedProduct);
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.notFound().build();
@@ -75,7 +68,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<GetProductResponse> createProducts(@RequestBody CreateProductRequest request) {
+    public ResponseEntity<ProductResponse> createProducts(@RequestBody CreateProductRequest request) {
         Product product = new Product();
         product.setName(request.getName());
         product.setPrice(request.getPrice());
@@ -84,7 +77,7 @@ public class ProductController {
         product.setSupplierId(request.getSupplierId());
         System.out.println("Before Save:" + product);
         Product savedProduct = productRepository.save(product);
-        GetProductResponse response = new GetProductResponse(savedProduct);
+        ProductResponse response = new ProductResponse(savedProduct);
         return ResponseEntity.ok(response);
     }
 

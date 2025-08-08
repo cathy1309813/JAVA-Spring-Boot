@@ -2,17 +2,17 @@ package com.gtalent.demo.responses;
 
 import com.gtalent.demo.models.Supplier;
 
-public class GetSupplierResponse {
+public class SupplierResponse {
     private int id;
     private String name;
     private String address;
     private String phone;
     private String email;
 
-    public GetSupplierResponse() {
+    public SupplierResponse() {
     }
 
-    public GetSupplierResponse(int id, String name, String address, String phone, String email) {
+    public SupplierResponse(int id, String name, String address, String phone, String email) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -21,7 +21,7 @@ public class GetSupplierResponse {
     }
 
     //從 User 轉成 DTO，此寫法是將其包裝成一個user物件(即對外的 DTO)。
-    public GetSupplierResponse(Supplier supplier) {
+    public SupplierResponse(Supplier supplier) {
         this.id = supplier.getId();
         this.name = supplier.getName();
         this.address = supplier.getAddress();

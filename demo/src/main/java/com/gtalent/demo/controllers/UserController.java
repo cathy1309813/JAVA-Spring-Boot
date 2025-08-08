@@ -4,7 +4,7 @@ import com.gtalent.demo.models.User;
 import com.gtalent.demo.requests.CreateUserRequest;
 import com.gtalent.demo.requests.UpdateUserRequest;
 import com.gtalent.demo.responses.CreateUserResponse;
-import com.gtalent.demo.responses.GetUserResponse;
+import com.gtalent.demo.responses.UserResponse;
 import com.gtalent.demo.responses.UpdateUserResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,12 +54,12 @@ public class UserController {
     //基於資安隱私考量 response id, username(7/29)
     //Map<key, map<key,value>>
     @GetMapping
-    public ResponseEntity<List<GetUserResponse>> getAllUsers2() {
+    public ResponseEntity<List<UserResponse>> getAllUsers2() {
         List<User> userList = new ArrayList<>(mockUser.values());
-        List<GetUserResponse> response = new ArrayList<>();
+        List<UserResponse> response = new ArrayList<>();
         //遍歷 userList，轉換成 GetUserResponse
         for (User user : userList) {
-            GetUserResponse dto = new GetUserResponse(user.getId(), user.getUsername());
+            UserResponse dto = new UserResponse(user.getId(), user.getUsername());
             response.add(dto);
         }
         return ResponseEntity.ok(response);
@@ -223,15 +223,15 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<GetUserResponse>> searchUser(@RequestParam String keyword) {
-        List<GetUserResponse> results = mockUser.values()
+    public ResponseEntity<List<UserResponse>> searchUser(@RequestParam String keyword) {
+        List<UserResponse> results = mockUser.values()
                 .stream() //lambda起手的表達式
                 .filter(user -> //過濾出來符合條件的users
                         user.getUsername().toLowerCase().contains(keyword.toLowerCase()))//結果為true的user[admin]
 
                 //所有結果為true的user[admin] mapping(映射=轉)成 GetUserResponse
                 //.map(this::toGetUserResponse) 跟 .map(user -> this.toGetUserResponse(user))這兩種寫法是相同的意思
-                .map(GetUserResponse::new)
+                .map(UserResponse::new)
                 .toList();
 //          //改以Lambda: .map(this::toGetUserResponse)去取代第237~240行
 //        List<GetUserResponse> responses = new ArrayList<>();
@@ -243,19 +243,19 @@ public class UserController {
 //        return ResponseEntity.ok(responses);
     }
 
-    private GetUserResponse toGetUserResponse(User user) {
-        return new GetUserResponse(user.getId(), user.getUsername());
+    private UserResponse toGetUserResponse(User user) {
+        return new UserResponse(user.getId(), user.getUsername());
     }
 
     @GetMapping("/normal")
-    public ResponseEntity<List<GetUserResponse>> getNormalUser() {
-        List<GetUserResponse> results = mockUser.values()
+    public ResponseEntity<List<UserResponse>> getNormalUser() {
+        List<UserResponse> results = mockUser.values()
                 .stream()
                 .filter(user -> {
                     String username = user.getUsername();
                     return username != null && !username.trim().equalsIgnoreCase("admin");
                 })
-                .map(GetUserResponse::new)
+                .map(UserResponse::new)
                 .toList();
 
         if (results.isEmpty()) {

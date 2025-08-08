@@ -1,22 +1,20 @@
 package com.gtalent.demo.responses;
 
 import com.gtalent.demo.models.Product;
-import com.gtalent.demo.models.User;
-import jakarta.persistence.Column;
 
 import java.math.BigDecimal;
 
-public class GetProductResponse {
+public class ProductResponse {
     private int id;
     private String name;
     private BigDecimal price;
     private int quantity;
     private boolean status;
 
-    public GetProductResponse() {
+    public ProductResponse() {
     }
 
-    public GetProductResponse(int id, String name, BigDecimal price, int quantity, boolean status) {
+    public ProductResponse(int id, String name, BigDecimal price, int quantity, boolean status) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -25,7 +23,7 @@ public class GetProductResponse {
     }
 
     // 新增這個：從 User 轉成 DTO，此寫法是將其包裝成一個user物件(即對外的 DTO)。
-    public GetProductResponse(Product product) {
+    public ProductResponse(Product product) {
         this.id = product.getId();
         this.name = product.getName();
         this.price = product.getPrice();

@@ -1,16 +1,11 @@
 package com.gtalent.demo.controllers;
 
 
-import com.gtalent.demo.models.Product;
 import com.gtalent.demo.models.Supplier;
-import com.gtalent.demo.repositories.ProductRepository;
 import com.gtalent.demo.repositories.SupplierRepository;
-import com.gtalent.demo.requests.CreateProductRequest;
 import com.gtalent.demo.requests.CreateSupplierRequest;
-import com.gtalent.demo.requests.UpdateProductRequest;
 import com.gtalent.demo.requests.UpdateSupplierRequest;
-import com.gtalent.demo.responses.GetProductResponse;
-import com.gtalent.demo.responses.GetSupplierResponse;
+import com.gtalent.demo.responses.SupplierResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,16 +27,16 @@ public class SupplierController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GetSupplierResponse>> getAllSupplier() {
+    public ResponseEntity<List<SupplierResponse>> getAllSupplier() {
         List<Supplier> suppliers = supplierRepository.findAll();
-        return ResponseEntity.ok(suppliers.stream().map(GetSupplierResponse::new).toList());
+        return ResponseEntity.ok(suppliers.stream().map(SupplierResponse::new).toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GetSupplierResponse> getSupplierById(@PathVariable int id) {
+    public ResponseEntity<SupplierResponse> getSupplierById(@PathVariable int id) {
         Optional<Supplier> supplier = supplierRepository.findById(id);
         if (supplier.isPresent()) {
-            GetSupplierResponse response = new GetSupplierResponse(supplier.get());
+            SupplierResponse response = new SupplierResponse(supplier.get());
             return ResponseEntity.ok(response);
         } else {
             //回傳404
@@ -50,7 +45,7 @@ public class SupplierController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<GetSupplierResponse> updateSupplierById(@PathVariable int id, @RequestBody UpdateSupplierRequest request) {
+    public ResponseEntity<SupplierResponse> updateSupplierById(@PathVariable int id, @RequestBody UpdateSupplierRequest request) {
         //1.找到Product
         Optional<Supplier> supplier = supplierRepository.findById(id);
         if(supplier.isPresent()) {
@@ -66,7 +61,7 @@ public class SupplierController {
             System.out.println("Before Save:" + updatedSupplier);
 
             updatedSupplier = supplierRepository.save(updatedSupplier);
-            GetSupplierResponse response = new GetSupplierResponse(updatedSupplier);
+            SupplierResponse response = new SupplierResponse(updatedSupplier);
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.notFound().build();
@@ -74,7 +69,7 @@ public class SupplierController {
     }
 
     @PostMapping
-    public ResponseEntity<GetSupplierResponse> createSuppliers(@RequestBody CreateSupplierRequest request) {
+    public ResponseEntity<SupplierResponse> createSuppliers(@RequestBody CreateSupplierRequest request) {
         Supplier supplier = new Supplier();
         supplier.setName(request.getName());
         supplier.setAddress(request.getAddress());
@@ -82,7 +77,7 @@ public class SupplierController {
         supplier.setEmail(request.getEmail());
         System.out.println("Before Save:" + supplier);
         Supplier savedSupplier = supplierRepository.save(supplier);
-        GetSupplierResponse response = new GetSupplierResponse(savedSupplier);
+        SupplierResponse response = new SupplierResponse(savedSupplier);
         return ResponseEntity.ok(response);
     }
 
