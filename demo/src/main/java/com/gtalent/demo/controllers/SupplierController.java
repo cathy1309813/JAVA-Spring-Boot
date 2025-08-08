@@ -55,8 +55,6 @@ public class SupplierController {
             //3.將欲更新資料填充至對應supplier
             updatedSupplier.setName(request.getName());
             updatedSupplier.setAddress(request.getAddress());
-            updatedSupplier.setPhone(request.getPhone());
-            updatedSupplier.setEmail(request.getEmail());
 
             System.out.println("Before Save:" + updatedSupplier);
 
