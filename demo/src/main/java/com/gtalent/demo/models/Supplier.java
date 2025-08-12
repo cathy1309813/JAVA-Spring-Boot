@@ -2,6 +2,8 @@ package com.gtalent.demo.models;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 
 @Entity
 @Table(name = "suppliers")
@@ -17,6 +19,19 @@ public class Supplier {
     private String phone;
     @Column(name = "email")
     private String email;
+
+    //說明: 24行mappedBy是指第10行的Supplier object
+    @OneToMany(mappedBy = "supplier") //One supplier to many products
+    private List<Product> products; //說明新增功能: 找到供應商後列出所有products，所以這邊設計型別為List(複數)，而非直接以Product作為型別(單數)
+
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
 
     public Supplier() {
     }

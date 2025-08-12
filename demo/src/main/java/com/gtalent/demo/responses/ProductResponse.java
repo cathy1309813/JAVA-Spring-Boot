@@ -11,6 +11,18 @@ public class ProductResponse {
     private int quantity;
     private boolean status;
 
+    //新定義一個SupplierResponse型別的物件
+    private SupplierResponse supplier;
+
+    //新增SupplierResponse型別物件的 GETTER 及 SETTER
+    public SupplierResponse getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(SupplierResponse supplier) {
+        this.supplier = supplier;
+    }
+
     public ProductResponse() {
     }
 

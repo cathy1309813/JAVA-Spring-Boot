@@ -2,12 +2,26 @@ package com.gtalent.demo.responses;
 
 import com.gtalent.demo.models.Supplier;
 
+import java.util.List;
+
 public class SupplierResponse {
     private int id;
     private String name;
     private String address;
     private String phone;
     private String email;
+
+    //新定義一個ProductResponse型別的集合(List)
+    private List<ProductResponse> product;
+
+    //新增List<ProductResponse>型別物件的 GETTER 及 SETTER
+    public List<ProductResponse> getProduct() {
+        return product;
+    }
+
+    public void setProduct(List<ProductResponse> product) {
+        this.product = product;
+    }
 
     public SupplierResponse() {
     }

@@ -78,7 +78,7 @@ public class UserController {
 //        return new ResponseEntity<>(response, HttpStatus.CREATED);
 //    }
 
-    //找特定ID的User: 路徑參數為int id，故URL只要打localhost:8080/users/1就會找到id=1資料
+//    //找特定ID的User: 路徑參數為int id，故URL只要打localhost:8080/users/1就會找到id=1資料
 //    @GetMapping("/users/{id}")
 //    public User getUserById(@PathVariable int id) {
 //        User user = mockUser.get(id);
@@ -92,7 +92,7 @@ public class UserController {
 //        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(user);
 //    }
 
-    //回傳404及200
+    //回傳 404找不到資源 及 200 OK
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable int id) {
         User user = mockUser.get(id);
@@ -100,10 +100,7 @@ public class UserController {
         if(user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        else {
-            return ResponseEntity.ok(user);
-            //return ResponseEntity<>.ok(user, HttpStatus.CREATE);
-        }
+        return ResponseEntity.ok(user);
     }
 
 //    @PutMapping("/{id}")
@@ -140,7 +137,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    //此方法必須自己編寫id、username、email，不符合資料庫auto_increment邏輯
+//    //此方法必須自己編寫id、username、email，不符合資料庫auto_increment邏輯
 //    @PostMapping("/users")
 //    public ResponseEntity<User> createUser(@RequestBody User request) {
 //

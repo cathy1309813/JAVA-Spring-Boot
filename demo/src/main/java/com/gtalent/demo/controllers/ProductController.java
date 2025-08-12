@@ -1,10 +1,13 @@
 package com.gtalent.demo.controllers;
 
 import com.gtalent.demo.models.Product;
+import com.gtalent.demo.models.Supplier;
 import com.gtalent.demo.repositories.ProductRepository;
+import com.gtalent.demo.repositories.SupplierRepository;
 import com.gtalent.demo.requests.CreateProductRequest;
 import com.gtalent.demo.requests.UpdateProductRequest;
 import com.gtalent.demo.responses.ProductResponse;
+import com.gtalent.demo.responses.SupplierResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,16 +22,29 @@ import java.util.Optional;
 public class ProductController {
     //step 1. 建立 Product Model
     private final ProductRepository productRepository;
+    private final SupplierRepository supplierRepository;
 
     @Autowired
-    public ProductController(ProductRepository productRepository) {
+    public ProductController(ProductRepository productRepository, SupplierRepository supplierRepository){
         this.productRepository = productRepository;
+        this.supplierRepository = supplierRepository;
     }
 
+//    @GetMapping
+//    public ResponseEntity<List<ProductResponse>> getAllProduct() {
+//        List<Product> products = productRepository.findAll();
+//        return ResponseEntity.ok(products.stream().map(ProductResponse::new).toList());
+//    }
+
+    //功能改寫: 為因應Product model中，新增了資料庫中多個products對應供應商詳細資料的關聯
     @GetMapping
     public ResponseEntity<List<ProductResponse>> getAllProduct() {
         List<Product> products = productRepository.findAll();
-        return ResponseEntity.ok(products.stream().map(ProductResponse::new).toList());
+        return ResponseEntity.ok(products.stream().map(product -> {
+            ProductResponse response = new ProductResponse(product);
+            response.setSupplier(new SupplierResponse(product.getSupplier()));
+            return response;
+        }).toList());
     }
 
     @GetMapping("/{id}")
@@ -36,6 +52,7 @@ public class ProductController {
         Optional<Product> product = productRepository.findById(id);
         if (product.isPresent()) {
             ProductResponse response = new ProductResponse(product.get());
+            response.setSupplier(new SupplierResponse(product.get().getSupplier()));
             return ResponseEntity.ok(response);
         } else {
             //回傳404
@@ -67,18 +84,37 @@ public class ProductController {
         }
     }
 
+//    @PostMapping
+//    public ResponseEntity<ProductResponse> createProducts(@RequestBody CreateProductRequest request) {
+//        Product product = new Product();
+//        product.setName(request.getName());
+//        product.setPrice(request.getPrice());
+//        product.setQuantity(request.getQuantity());
+//        product.setStatus(request.isStatus());
+//        product.setSupplierId(request.getSupplierId());
+//        System.out.println("Before Save:" + product);
+//        Product savedProduct = productRepository.save(product);
+//        ProductResponse response = new ProductResponse(savedProduct);
+//        return ResponseEntity.ok(response);
+//    }
+
     @PostMapping
     public ResponseEntity<ProductResponse> createProducts(@RequestBody CreateProductRequest request) {
-        Product product = new Product();
-        product.setName(request.getName());
-        product.setPrice(request.getPrice());
-        product.setQuantity(request.getQuantity());
-        product.setStatus(request.isStatus());
-        product.setSupplierId(request.getSupplierId());
-        System.out.println("Before Save:" + product);
-        Product savedProduct = productRepository.save(product);
-        ProductResponse response = new ProductResponse(savedProduct);
-        return ResponseEntity.ok(response);
+        Optional<Supplier> supplier = supplierRepository.findById(request.getSupplierId());
+        if (supplier.isPresent()) {
+            Product product = new Product();
+            product.setName(request.getName());
+            product.setPrice(request.getPrice());
+            product.setQuantity(request.getQuantity());
+            product.setStatus(request.isStatus());
+            product.setSupplier(supplier.get());
+            System.out.println("Before Save:" + product);
+            Product savedProduct = productRepository.save(product);
+            ProductResponse response = new ProductResponse(savedProduct);
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")

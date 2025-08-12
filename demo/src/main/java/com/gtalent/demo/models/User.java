@@ -13,7 +13,12 @@ public class User {
     private String username;
     @Column(name="email")  //代表對應的資料表欄位
     private String email;
+
+    @Column(name="pwd")
+    //todo 實際應用環境切勿使用明碼儲存(8/12)
     private String pwd;
+
+
 
     public User() {
 

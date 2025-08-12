@@ -18,19 +18,34 @@ public class Product {
     private int quantity;
     @Column(name = "status")
     private boolean status;
-    @Column(name = "supplier_id")
-    private int supplierId;
+//    @Column(name = "supplier_id")
+//    private int supplierId;
+
+    //因Supplier_id在資料庫中有外鍵功能
+    @ManyToOne  //Many Products to One Supplier
+    @JoinColumn(name = "supplier_id")
+    private Supplier supplier;  //連帶讀取資料庫中supplier表格內容
 
     public Product() {
     }
 
-    public Product(int id, String name, BigDecimal price, int quantity, boolean status, int supplierId) {
+//    public Product(int id, String name, BigDecimal price, int quantity, boolean status, int supplierId) {
+//        this.id = id;
+//        this.name = name;
+//        this.price = price;
+//        this.quantity = quantity;
+//        this.status = status;
+//        this.supplierId = supplierId;
+//    }
+
+
+    public Product(int id, String name, BigDecimal price, int quantity, boolean status, Supplier supplier) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.quantity = quantity;
         this.status = status;
-        this.supplierId = supplierId;
+        this.supplier = supplier;
     }
 
     public int getId() {
@@ -73,12 +88,20 @@ public class Product {
         this.status = status;
     }
 
-    public int getSupplierId() {
-        return supplierId;
+//    public int getSupplierId() {
+//        return supplierId;
+//    }
+//
+//    public void setSupplierId(int supplierId) {
+//        this.supplierId = supplierId;
+//    }
+
+    public Supplier getSupplier() {
+        return supplier;
     }
 
-    public void setSupplierId(int supplierId) {
-        this.supplierId = supplierId;
+    public void setSupplier(Supplier supplier) {
+        this.supplier = supplier;
     }
 
     @Override

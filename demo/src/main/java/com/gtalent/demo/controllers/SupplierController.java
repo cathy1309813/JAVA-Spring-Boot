@@ -1,10 +1,12 @@
 package com.gtalent.demo.controllers;
 
 
+import com.gtalent.demo.models.Product;
 import com.gtalent.demo.models.Supplier;
 import com.gtalent.demo.repositories.SupplierRepository;
 import com.gtalent.demo.requests.CreateSupplierRequest;
 import com.gtalent.demo.requests.UpdateSupplierRequest;
+import com.gtalent.demo.responses.ProductResponse;
 import com.gtalent.demo.responses.SupplierResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,17 +28,49 @@ public class SupplierController {
         this.supplierRepository = supplierRepository;
     }
 
+//    @GetMapping
+//    public ResponseEntity<List<SupplierResponse>> getAllSupplier() {
+//        List<Supplier> suppliers = supplierRepository.findAll();
+//        return ResponseEntity.ok(suppliers.stream().map(SupplierResponse::new).toList());
+//    }
+
+    //功能改寫: 為因應Supplier model中，新增了資料庫Supplier對Products的關聯
     @GetMapping
     public ResponseEntity<List<SupplierResponse>> getAllSupplier() {
         List<Supplier> suppliers = supplierRepository.findAll();
-        return ResponseEntity.ok(suppliers.stream().map(SupplierResponse::new).toList());
+        return ResponseEntity.ok(suppliers.stream().map(supplier -> {
+            SupplierResponse response = new SupplierResponse(supplier);
+            response.setProduct(supplier.getProducts()
+                    .stream()
+                    .map(ProductResponse::new)
+                    .toList());
+            return response;
+        }).toList());
     }
 
+//    @GetMapping("/{id}")
+//    public ResponseEntity<SupplierResponse> getSupplierById(@PathVariable int id) {
+//        Optional<Supplier> supplier = supplierRepository.findById(id);
+//        if (supplier.isPresent()) {
+//            SupplierResponse response = new SupplierResponse(supplier.get());
+//            return ResponseEntity.ok(response);
+//        } else {
+//            //回傳404
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//        }
+//    }
+
+    //功能改寫: 為因應Supplier model中，新增了資料庫Supplier對Products的關聯
     @GetMapping("/{id}")
     public ResponseEntity<SupplierResponse> getSupplierById(@PathVariable int id) {
         Optional<Supplier> supplier = supplierRepository.findById(id);
         if (supplier.isPresent()) {
             SupplierResponse response = new SupplierResponse(supplier.get());
+            List<ProductResponse> productResponseList = supplier.get().getProducts()
+                    .stream()
+                    .map(ProductResponse::new)
+                    .toList();
+            response.setProduct(productResponseList);
             return ResponseEntity.ok(response);
         } else {
             //回傳404
