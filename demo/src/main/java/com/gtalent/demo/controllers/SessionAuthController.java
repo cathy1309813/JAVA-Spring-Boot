@@ -58,7 +58,7 @@ public class SessionAuthController {
         if (request.getUsername() == null || request.getPwd() == null) {
             return ResponseEntity.badRequest().build(); //回傳400
         }
-        //2.確認資料和否後再執行
+        //2.確認資料合法後再執行
         String username = request.getUsername();
         String pwd = request.getPwd();
         //3.檢查帳號是否已存在，避免重複註冊 -->要問資料庫
