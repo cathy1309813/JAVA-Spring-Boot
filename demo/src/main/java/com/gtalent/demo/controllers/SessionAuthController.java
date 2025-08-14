@@ -5,6 +5,7 @@ import com.gtalent.demo.models.User;
 import com.gtalent.demo.repositories.UserRepository;
 import com.gtalent.demo.requests.LoginRequest;
 import com.gtalent.demo.requests.RegisterRequest;
+import com.gtalent.demo.responses.RegisterResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -54,8 +55,8 @@ public class SessionAuthController {
 
     //新增一個讓使用者可以註冊帳號的API：
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody RegisterRequest request, HttpSession session) {
-        //1.先接收與驗證資料 並確認 驗證輸入的資料是否合法（例如帳號不為空、密碼不為空）
+    public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest request, HttpSession session) {
+        //1.先接收與驗證資料 並確認 驗證輸入的資料是否合法（例如帳號、信箱、密碼不為空）
         if (request.getUsername() == null || request.getEmail() == null || request.getPwd() == null) {
             return ResponseEntity.badRequest().build(); //回傳400
         }
@@ -63,21 +64,22 @@ public class SessionAuthController {
         String username = request.getUsername();
         String email = request.getEmail();
         String pwd = request.getPwd();
-        //3.檢查帳號是否已存在，避免重複註冊 -->要問資料庫
+        //3.檢查帳號、信箱是否已存在，避免重複註冊 -->要問資料庫
         Optional<User> existingUser = userRepository.findByUsername(request.getUsername());
-        if (existingUser.isPresent()) {
+        Optional<User> existingEmail = userRepository.findByEmail(request.getEmail());
+        if (existingUser.isPresent() || existingEmail.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build(); //回傳409
         }
         //4.新使用者存入資料庫
         User newUser =new User();
         newUser.setUsername(username);
         newUser.setEmail(email);
-        newUser.setPwd(pwd);
+        newUser.setPwd(pwd); //再修改:後續應加密，不要顯示
         userRepository.save(newUser);
         //5.將使用者登入 session
         session.setAttribute("userId", newUser.getId());
-        //6.回傳結果給前端
-        return ResponseEntity.status(HttpStatus.CREATED).build(); //回傳201
+        //6.回傳安全DTO給前端
+        return ResponseEntity.status(HttpStatus.CREATED).body(new RegisterResponse(newUser)); //回傳201
     }
     
 }
