@@ -66,13 +66,13 @@ public class UserController {
     }
 
 
-//    @GetMapping
-//    public ResponseEntity<GetUserResponse> getUserById3(@PathVariable int id) {
+//    @GetMapping("/{id}")
+//    public ResponseEntity<UserResponse> getUserById3(@PathVariable int id) {
 //        User user = mockUser.get(id);
 //        if (user == null) {
 //            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 //        }
-//        GetUserResponse response = new GetUserResponse();
+//        UserResponse response = new UserResponse();
 //        response.setId(user.getId());
 //        response.setUsername(user.getUsername());
 //        return new ResponseEntity<>(response, HttpStatus.CREATED);

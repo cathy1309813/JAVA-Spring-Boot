@@ -4,6 +4,7 @@ import com.gtalent.demo.Services.UserService;
 import com.gtalent.demo.models.User;
 import com.gtalent.demo.repositories.UserRepository;
 import com.gtalent.demo.requests.LoginRequest;
+import com.gtalent.demo.requests.RegisterRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -53,13 +54,14 @@ public class SessionAuthController {
 
     //新增一個讓使用者可以註冊帳號的API：
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody LoginRequest request, HttpSession session) {
+    public ResponseEntity<User> register(@RequestBody RegisterRequest request, HttpSession session) {
         //1.先接收與驗證資料 並確認 驗證輸入的資料是否合法（例如帳號不為空、密碼不為空）
-        if (request.getUsername() == null || request.getPwd() == null) {
+        if (request.getUsername() == null || request.getEmail() == null || request.getPwd() == null) {
             return ResponseEntity.badRequest().build(); //回傳400
         }
         //2.確認資料合法後再執行
         String username = request.getUsername();
+        String email = request.getEmail();
         String pwd = request.getPwd();
         //3.檢查帳號是否已存在，避免重複註冊 -->要問資料庫
         Optional<User> existingUser = userRepository.findByUsername(request.getUsername());
@@ -69,6 +71,7 @@ public class SessionAuthController {
         //4.新使用者存入資料庫
         User newUser =new User();
         newUser.setUsername(username);
+        newUser.setEmail(email);
         newUser.setPwd(pwd);
         userRepository.save(newUser);
         //5.將使用者登入 session
