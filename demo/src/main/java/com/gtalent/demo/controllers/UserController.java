@@ -66,18 +66,6 @@ public class UserController {
     }
 
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<UserResponse> getUserById3(@PathVariable int id) {
-//        User user = mockUser.get(id);
-//        if (user == null) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//        }
-//        UserResponse response = new UserResponse();
-//        response.setId(user.getId());
-//        response.setUsername(user.getUsername());
-//        return new ResponseEntity<>(response, HttpStatus.CREATED);
-//    }
-
 //    //找特定ID的User: 路徑參數為int id，故URL只要打localhost:8080/users/1就會找到id=1資料
 //    @GetMapping("/users/{id}")
 //    public User getUserById(@PathVariable int id) {
@@ -87,21 +75,34 @@ public class UserController {
 
 //    //回傳404找不到資源
 //    @GetMapping("/users/{id}")
-//    public ResponseEntity<User> getUserById(@PathVariable int id) {
+//    public ResponseEntity<User> getUserById2(@PathVariable int id) {
 //        User user = mockUser.get(id);
 //        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(user);
 //    }
 
+    //查詢指定ID
     //回傳 404找不到資源 及 200 OK
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable int id) {
+    public ResponseEntity<User> getUserById3(@PathVariable int id) {
         User user = mockUser.get(id);
-
         if(user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(user);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponse> getUserById4(@PathVariable int id) {
+        User user = mockUser.get(id);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        UserResponse response = new UserResponse();
+        response.setId(user.getId());
+        response.setUsername(user.getUsername());
+        return ResponseEntity.ok(response);
+    }
+
 
 //    @PutMapping("/{id}")
 //    public ResponseEntity<User> updateUserById(@PathVariable int id, @RequestBody User request) {
@@ -136,6 +137,7 @@ public class UserController {
         UpdateUserResponse response = new UpdateUserResponse(user.getUsername());
         return ResponseEntity.ok(response);
     }
+
 
 //    //此方法必須自己編寫id、username、email，不符合資料庫auto_increment邏輯
 //    @PostMapping("/users")
@@ -188,16 +190,17 @@ public class UserController {
 //    }
 
     @PostMapping
-    //顯示username, email(7/29)
+    //建立 request 顯示 username、email(7/29)
     public ResponseEntity<CreateUserResponse> createUser2(@RequestBody CreateUserRequest request) {
         int newId = atomicInteger.getAndIncrement();
         User user = new User(newId, request.getUsername(), request.getEmail());
         mockUser.put(newId, user);
-        //建立只含 username 的回應物件 (排除email資料外洩疑慮)
+        //建立 response 只含 username 的回應物件 (排除email資料外洩疑慮)
         CreateUserResponse response = new CreateUserResponse(user.getUsername());
         //回傳只包含 username 的 JSON
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<User> deleteUser(@PathVariable int id) {
@@ -219,28 +222,23 @@ public class UserController {
         return ResponseEntity.noContent().build(); //204 無回應內容，代表刪除成功
     }
 
+
     @GetMapping("/search")
     public ResponseEntity<List<UserResponse>> searchUser(@RequestParam String keyword) {
         List<UserResponse> results = mockUser.values()
                 .stream() //lambda起手的表達式
                 .filter(user -> //過濾出來符合條件的users
-                        user.getUsername().toLowerCase().contains(keyword.toLowerCase()))//結果為true的user[admin]
+                        user.getUsername().toLowerCase().contains(keyword.toLowerCase())) //結果為true的user[admin]
 
                 //所有結果為true的user[admin] mapping(映射=轉)成 GetUserResponse
                 //.map(this::toGetUserResponse) 跟 .map(user -> this.toGetUserResponse(user))這兩種寫法是相同的意思
                 .map(UserResponse::new)
                 .toList();
-//          //改以Lambda: .map(this::toGetUserResponse)去取代第237~240行
-//        List<GetUserResponse> responses = new ArrayList<>();
-//        for (User user : results) {
-//            GetUserResponse response = new GetUserResponse(user.getId(), user.getUsername());
-//            responses.add(response);
           return ResponseEntity.ok(results);
-//        }
-//        return ResponseEntity.ok(responses);
     }
 
     private UserResponse toGetUserResponse(User user) {
+
         return new UserResponse(user.getId(), user.getUsername());
     }
 
@@ -261,3 +259,11 @@ public class UserController {
     return ResponseEntity.ok(results);
     }
 }
+//          //改以Lambda:.map(this::toGetUserResponse)去取代第237~240行
+//        List<GetUserResponse> responses = new ArrayList<>();
+//        for (User user : results) {
+//            GetUserResponse response = new GetUserResponse(user.getId(), user.getUsername());
+//            responses.add(response);
+
+//        }
+//        return ResponseEntity.ok(responses);
