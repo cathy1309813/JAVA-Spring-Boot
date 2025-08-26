@@ -57,7 +57,8 @@ public class SessionAuthController {
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest request, HttpSession session) {
         //1.先接收與驗證資料 並確認 驗證輸入的資料是否合法（例如帳號、信箱、密碼不為空）
-        if (request.getUsername() == null || request.getEmail() == null || request.getPwd() == null) {
+        if (request.getUsername() == null || request.getEmail() == null || request.getPwd() == null
+         || request.getRole() == null) {
             return ResponseEntity.badRequest().build(); //回傳400
         }
         //2.確認資料合法後再執行
@@ -75,6 +76,7 @@ public class SessionAuthController {
         newUser.setUsername(username);
         newUser.setEmail(email);
         newUser.setPwd(pwd); //再修改:後續應加密，不要顯示
+        newUser.setRole(request.getRole());
         userRepository.save(newUser);
         //5.將使用者登入 session
         session.setAttribute("userId", newUser.getId());

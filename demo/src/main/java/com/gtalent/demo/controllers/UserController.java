@@ -6,6 +6,10 @@ import com.gtalent.demo.requests.UpdateUserRequest;
 import com.gtalent.demo.responses.CreateUserResponse;
 import com.gtalent.demo.responses.UserResponse;
 import com.gtalent.demo.responses.UpdateUserResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +23,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
 @RequestMapping("/users") //將/users提取出來，就不需要在每一個方法裡都需要/users
+
 public class UserController {
+
     private final Map<Integer, User> mockUser = new HashMap<>();
     //模擬DB自增ID的效果
     protected final AtomicInteger atomicInteger = new AtomicInteger();
@@ -80,16 +86,16 @@ public class UserController {
 //        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(user);
 //    }
 
-    //查詢指定ID
-    //回傳 404找不到資源 及 200 OK
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById3(@PathVariable int id) {
-        User user = mockUser.get(id);
-        if(user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return ResponseEntity.ok(user);
-    }
+//    //查詢指定ID
+//    //回傳 404找不到資源 及 200 OK
+//    @GetMapping("/{id}")
+//    public ResponseEntity<User> getUserById3(@PathVariable int id) {
+//        User user = mockUser.get(id);
+//        if(user == null) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//        }
+//        return ResponseEntity.ok(user);
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById4(@PathVariable int id) {

@@ -18,7 +18,8 @@ public class User {
     //todo 實際應用環境切勿使用明碼儲存(8/12)
     private String pwd;
 
-
+    @Column(name="role")
+    private String role;
 
     public User() {
 
@@ -60,6 +61,14 @@ public class User {
 
     public void setPwd(String pwd) {
         this.pwd = pwd;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     @Override

@@ -12,13 +12,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
-import java.security.Security;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,8 +23,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     //驗證流程核心: 基於 OncePerRequest 自定義的一個過濾器 JwtAuthFilter
     //確保每個請求都會經過此過濾器一次
 
-    private JwtService jwtService;
-    private UserRepository userRepository;
+    private final JwtService jwtService;
+    private final UserRepository userRepository;
 
     //依賴注入
     @Autowired
@@ -59,12 +55,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             //todo 驗證token是否過期或無效
             if (user.isPresent()) {
                 //*** 若使用Spring Security(library) 必須包含 授權 (Authorization)邏輯 -> "該用戶能做什麼?" ***
-                List<? extends GrantedAuthority> authorities = getUserAuthorities();
+                List<? extends GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.get().getRole()));
                 //該 token 並非 jwt token ，而是 Spring Security 內部使用的 token (包含 user & authorities)
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         user.get(), null, authorities);
 //                authenticationToken.setDetails(new WebAuthenticationDetails().buildDetails(request));
-                //Spring Security 令牌認證箱
+                //將 內部使用的token 投進 Spring Security 令牌認證箱 (SecurityContextHolder)
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }
@@ -74,6 +70,4 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private List<? extends GrantedAuthority> getUserAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
-
-
 }

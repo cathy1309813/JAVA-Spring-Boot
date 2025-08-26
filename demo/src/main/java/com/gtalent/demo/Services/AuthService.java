@@ -7,8 +7,8 @@ import com.gtalent.demo.requests.LoginRequest;
 import com.gtalent.demo.requests.RegisterRequest;
 import com.gtalent.demo.responses.AuthResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 
 @Service
@@ -18,6 +18,8 @@ public class AuthService {
     private UserRepository userRepository;
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public AuthResponse register(RegisterRequest request) {
         //註冊請求 (RegisterRequest) 取得新使用者資料
@@ -25,7 +27,8 @@ public class AuthService {
         //取得新使用者 username、email、pwd
         newUser.setUsername(request.getUsername());
         newUser.setEmail(request.getEmail());
-        newUser.setPwd(request.getPwd());
+        newUser.setPwd(passwordEncoder.encode(request.getPwd()));
+        newUser.setRole(request.getRole());
         //將新使用者資料存進資料庫
         userRepository.save(newUser);
         //產生 JWT Token
@@ -38,7 +41,7 @@ public class AuthService {
         Optional<User> userOptional = userRepository.findByUsername(request.getUsername());
         if(userOptional.isPresent()) {
             User user = userOptional.get();
-            if (request.getPwd().equals(user.getPwd())) {
+            if (passwordEncoder.matches(request.getPwd(), user.getPwd())) {
                 String jwtToken = jwtService.generateToken(user);
                 return new AuthResponse(jwtToken);
             }
